@@ -2,10 +2,13 @@ import React, { useState } from 'react'
 
 const EmojiGrid = (props) => {
 
-    let [isOpen, setIsOpen] = useState(false)
+    const [openEmojiId, setOpenEmojiId] = useState(null);
 
 
     let displayEmojies = (props) => {
+
+        const isOpen = openEmojiId === props.id;
+
         return (
             <div key={props.id} className='col-2 p-2 shadow-lg'>
                 <div className='row align-items-center'>
@@ -18,9 +21,9 @@ const EmojiGrid = (props) => {
                 </div>
                 <p>{props.discription.slice(0, 22) + "..."}</p>
 
-                <button className='btn btn-sm btn-primary' onClick={() => { setIsOpen(true) }}>view</button>
+                <button className='btn btn-sm btn-primary' onClick={() => { toggleEmojiPopUp(props.id) }}>view</button>
 
-                {isOpen ? <EmojiPopUp emoji={props} /> : null}
+                {isOpen && <EmojiPopUp emoji={props} />}
 
             </div>
         )
@@ -28,7 +31,7 @@ const EmojiGrid = (props) => {
 
     let EmojiPopUp = (props) => {
         return (
-            <div className={isOpen ? "" : "collapse"} id='emoji-pop-up'>
+            <div id='emoji-pop-up'>
                 <div style={{ width: "600px", height: "600px" }} className='bg-dark position-fixed z-3 start-50 top-50 translate-middle d-flex flex-column justify-content-center align-items-center'>
                     <div style={{ fontSize: "10rem" }} className=''>
                         {props.emoji.icon}
@@ -39,13 +42,21 @@ const EmojiGrid = (props) => {
                     <div className="text-light">
                         <p className='fs-8 p-5'>{props.emoji.discription}</p>
                     </div>
-                    <button className='btn bg-danger btn-close' onClick={() => {
-                        setIsOpen(false)
-                    }}></button>
+                    <button className='btn bg-danger btn-close' onClick={()=>{setOpenEmojiId(null)}}></button>
+
                 </div>
             </div>
         )
     }
+
+    // Function to toggle pop-up for each emoji
+    const toggleEmojiPopUp = (id) => {
+        if (openEmojiId === id) {
+            setOpenEmojiId(null); // Close pop-up if already open
+        } else {
+            setOpenEmojiId(id); // Open pop-up for this emoji
+        }
+    };
 
     return (
         <>
@@ -56,7 +67,7 @@ const EmojiGrid = (props) => {
 
                         {/* display all emojies from the array of emojies */}
                         {
-                            props.data.map(displayEmojies)
+                            props.data.map((emoji) => displayEmojies(emoji))
                         }
 
                     </div>
@@ -67,4 +78,3 @@ const EmojiGrid = (props) => {
 }
 
 export default EmojiGrid
-
